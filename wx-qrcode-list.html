@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.min.js"></script>
+    <script src="https://www.layuicdn.com/layui/layui.js"></script>
+    <link rel="stylesheet" href="https://www.layuicdn.com/layui/css/layui.css">
+    <title>微信扫码登录第三方</title>
+</head>
+<style>
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+        background-color: #F5F5F5;
+    }
+    ::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        background-color: #FFF;
+    }
+    ::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color: #AAA;
+    }
+    div{
+        transition: all 0.4s;
+    }
+    .layui-code{
+        border: none;
+    }
+    .layui-card-header{
+        border-bottom: none;
+    }
+    .wx-qrcode-list-bg{
+        position: absolute;
+        right: 5px;
+        top: 0;
+    }
+    .wx-qrcode-list-msg{
+        position: absolute;
+        left: 5px;
+        top: 5px;
+    }
+    .wx-qrcode-list-item{
+        text-align: center;
+        margin: 40px;
+        font-size: 1rem;
+        font-weight: 900;
+        cursor: pointer;
+    }
+    .wx-qrcode-list-footer{
+        text-align: center;
+        margin: 20px;
+        color: #bdbdbd;
+        font-size: 16px;
+        font-weight: 900;
+    }
+    .wx-qrcode-list-black{
+        color: #b79696;
+        background-color: #333;
+    }
+</style>
+<body>
+    <div id="wx-qrcode-list" v-cloak>
+        <div class="layui-card" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" >
+            <div class="layui-card-header" style="text-align: center;" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" >以下游戏支持微信官方扫码登录</div>
+            <input type="button" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" class="layui-btn layui-btn-primary layui-btn-xs wx-qrcode-list-msg" onclick="alert('不可能有bug ！！')" value="反馈错误">
+            <form class="layui-form wx-qrcode-list-bg">
+                <input type="checkbox" name="black" lay-skin="switch" lay-text="暗黑版|暗黑版" @click="wx_qrcode_backgroud">
+            </form>
+            <div class="layui-card-body" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" >
+                <ul class="layui-row layui-col-space1">
+                    <li class="layui-col-md3 wx-qrcode-list-item" v-for="qrcode in wx_qrcode_list" @click="wx_qrcode_item(qrcode.appid)">
+                        <a lay-href="" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" >
+                            <i class="layui-icon layui-icon-login-wechat"></i>
+                            <cite>{{qrcode.name}}</cite>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="layui-card-header wx-qrcode-list-footer" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" >
+                使用微信开放平台官方API接口，当前页面仅用作跳转，页面源代码如下，放心使用~
+            </div>
+
+            <div class="layui-card-header wx-qrcode-list-footer" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" >
+                © 2021 by <a href="https://github.com/iamtsm">iamtsm</a>
+            </div>
+
+            <pre class="layui-code" style="margin-top: 50px" lay-title="源代码" :class="wx_qrcode_backgroud_balck ? 'wx-qrcode-list-black':''" >
+                
+            </pre>
+        </div>
+    </div>
+
+    <script>
+        layui.use(['code','form'], function(){
+            window.form = layui.form;
+            layui.code();
+        });
+        new Vue({
+            el: '#wx-qrcode-list',
+            methods: {
+                wx_qrcode_item: function (appid) {
+                    window.location.href = this.wx_qrcode_link(appid);
+                },
+                wx_qrcode_link: function (appid) {
+                    return `https://open.weixin.qq.com/connect/app/qrconnect?appid=${appid}&bundleid=com.tencent.smoba&scope=snsapi_base,snsapi_userinfo,snsapi_friend,snsapi_message&state=weixin`;
+                },
+                wx_qrcode_backgroud : function(){
+                    this.wx_qrcode_backgroud_balck = !this.wx_qrcode_backgroud_balck;
+                    console.log(this.wx_qrcode_backgroud_balck)
+                }
+            },
+            mounted(){
+                let that = this;
+                document.querySelector(".layui-code").innerText = document.documentElement.outerHTML;
+                setTimeout(()=>{
+                    window.form.on('switch', that.wx_qrcode_backgroud);
+                },1000);
+            },
+            data: {
+                wx_qrcode_backgroud_balck : false,
+                wx_qrcode_list: [{
+                    name: "王者荣耀",appid: "wx95a3a4d7c627e07d"
+                },{
+                    name: "王者荣耀前瞻版",appid: "wx71a79717188d990b"
+                },{
+                    name: "和平精英",appid: "wxc4c0253df149f02d"
+                },{
+                    name: "金铲铲之战",appid: "wxb23e82d26e8ab140"
+                },{
+                    name: "英雄联盟手游",appid: "wx5a611599efa17e78"
+                },{
+                    name: "球球大作战",appid: "wx78d3d4b3ffce4211"
+                },{
+                    name: "QQ飞车",appid: "wx360b06d575d20cc3"
+                },{
+                    name: "跑跑卡丁车",appid: "wx095ef8ef7e64b291"
+                },{
+                    name: "穿越火线-枪战王者",appid: "wx58164a91f1821369"
+                },{
+                    name: "QQ炫舞手游",appid: "wx9b2251fa995dcf56"
+                },{
+                    name: "皇室战争",appid: "wxc56ff65190e6db97"
+                },{
+                    name: "部落冲突",appid: "wxfa242abf8cdd841a"
+                },{
+                    name: "完美世界",appid: "wx7819539d83b9dc1e"
+                },{
+                    name: "天天酷跑",appid: "wx15f5f4874ca259f4"
+                },{
+                    name: "我的世界",appid: "wxc0ac304348b87997"
+                },{
+                    name: "火影忍者-疾风传",appid: "wx82dd7436af5db835"
+                },{
+                    name: "火影忍者：忍者新世代",appid: "wxbfb16a632cbdd710"
+                },{
+                    name: "FIFA足球世界",appid: "wxfe6672d593719f37"
+                },{
+                    name: "剑网3指尖江湖",appid: "wxdd8ef1519da76755"
+                },{
+                    name: "最强NBA",appid: "wx1a6e7e59c7e5b31e"
+                },{
+                    name: "魂斗罗：归来",appid: "wx6ce9dd56690217fe"
+                },{
+                    name: "香肠派对正式版",appid: "wxc5a92b833419037b"
+                },{
+                    name: "三生三世十里桃花",appid: "wx48a3b2db49e29a1b"
+                },{
+                    name: "食物语",appid: "wx2282c66d8250ddf7"
+                },{
+                    name: "妖精的尾巴",appid: "wx1b4d03357ad23b00"
+                },{
+                    name: "街头篮球",appid: "wxbd9301b66287da6f"
+                }]
+            }
+        })
+    </script>
+</body>
+
+</html>
